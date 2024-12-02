@@ -41,26 +41,96 @@
         );
       }
 
+      function Counter() {
+        let [counter, setCounter] = React.useState(0);
+
+        return (
+          <React.Fragment>
+            <div className="flex text-6xl border border-zinc-600 w-fit p-2 gap-3 rounded-lg mb-3">
+              <button
+                className="bg-blue-300 rounded-sm"
+                onClick={() => setCounter((preVal) => preVal - 1)}
+              >
+                -
+              </button>
+              <p>{counter}</p>
+              <button
+                className="bg-blue-300 rounded-sm"
+                onClick={() => setCounter((preVal) => preVal + 1)}
+              >
+                +
+              </button>
+            </div>
+            <Grid limit={counter} />
+          </React.Fragment>
+        );
+      }
+
+      function Grid({ limit = 1 }) {
+        const data = [
+          {
+            id: 1,
+            name: "React",
+            description: "A JavaScript library for building user interfaces",
+          },
+          {
+            id: 2,
+            name: "Angular",
+            description:
+              "A TypeScript-based open-source front-end web framework",
+          },
+          {
+            id: 3,
+            name: "Vue",
+            description:
+              "A progressive JavaScript framework for building user interfaces",
+          },
+          {
+            id: 4,
+            name: "Svelte",
+            description: "A compiler for building user interfaces",
+          },
+        ];
+
+        return (
+          <div className="flex flex-wrap gap-4">
+            {data.slice(0, limit).map((currentObj) => {
+              return (
+                <div
+                  key={currentObj.id}
+                  className="border border-zinc-800 rounded-lg p-4 w-48"
+                >
+                  <h2 className="text-2xl font-bold mb-2">{currentObj.name}</h2>
+                  <p>{currentObj.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        );
+      }
+
       function Main() {
         return (
           <main className="px-8 py-6 container">
             <h2 className="text-xl font-bold mb-3">Why? 🤔</h2>
-            <p>
+            <p className="mb-5">
               React from base is a project that uses React without any other
               libraries or build tools. In-fact, it doesn't even have any{" "}
               <code className="font-monospace bg-zinc-300 rounded p-1">
                 package.json
               </code>
             </p>
+            <Counter />
+            {/* <Grid limit={3} /> */}
           </main>
         );
       }
 
       root.render(
-        <React.Fragment>
+        <React.StrictMode>
           <Header>React From Base</Header>
           <Main />
-        </React.Fragment>
+        </React.StrictMode>
       );
     </script>
   </body>
