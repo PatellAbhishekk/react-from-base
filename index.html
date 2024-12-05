@@ -45,17 +45,19 @@
           <header
             className={`${backgroundOptions[bgColor]} px-8 py-6 border-b`}
           >
-            <h1 className="text-2xl font-semibold">{children}</h1>
+            <h1 className="text-2xl font-semibold">
+              {children || "React from base"}
+            </h1>
           </header>
         );
       }
 
-      function Counter({ handleChange }) {
+      function Counter({ handleChange, bgColor }) {
         let [counter, setCounter] = React.useState(0);
 
         function handleClick(operation = "+") {
-          setCounter((prevValue) => {
-            let newValue = operation === "+" ? prevValue + 1 : prevValue - 1;
+          setCounter((preValue) => {
+            let newValue = operation === "+" ? preValue + 1 : preValue - 1;
             handleChange(newValue);
             return newValue;
           });
@@ -63,7 +65,9 @@
 
         return (
           <React.Fragment>
-            <div className="flex text-6xl border border-zinc-600 w-fit p-2 gap-3 rounded-lg mb-3">
+            <div
+              className={`flex text-6xl border border-zinc-600 w-fit p-2 gap-3 rounded-lg mb-3 bg-[${bgColor}]`}
+            >
               <button
                 className="bg-blue-300 rounded-sm"
                 onClick={() => handleClick("-")}
@@ -85,41 +89,54 @@
 
       function Grid({ limit = 1 }) {
         const [data, setData] = React.useState([]);
+
         React.useEffect(() => {
+          console.log("React.useEffect()");
+
           fetch(
             "https://cdn.jsdelivr.net/gh/gliese-sketch/bbt-cars-inventory@refs/heads/main/src/data.json"
           )
             .then((res) => res.json())
             .then((data) => {
-              console.log(data);
               setData(data);
             });
         }, []);
+
         return (
-          <div className="flex flex-wrap gap-4">
-            {data.slice(0, limit < 0 ? 0 : limit).map((currentObj) => {
-              const price = currentObj.price;
-              const priceFormated = price.toLocaleString("en-IN", {
-                style: "currency",
-                currency: "INR",
-              });
-              return (
-                <div
-                  key={currentObj.id}
-                  className="border border-zinc-800 rounded-lg p-4 w-48"
-                >
-                  <h2 className="text-2xl font-bold mb-2">{currentObj.name}</h2>
-                  <p>{priceFormated}</p>
-                  <img src={currentObj.img} />
-                </div>
-              );
-            })}
-          </div>
+          <React.Fragment>
+            <div className="flex flex-wrap gap-4">
+              {data.slice(0, limit < 0 ? 0 : limit).map((currentObj) => {
+                const price = currentObj.price;
+                const priceFormat = price.toLocaleString("en-IN", {
+                  style: "currency",
+                  currency: "INR",
+                });
+
+                return (
+                  <div
+                    key={currentObj.id}
+                    className="bg-stone-100 rounded-lg p-4 w-48 flex flex-col justify-between border border-stone-300"
+                  >
+                    <h2 className="text-xl font-bold mb-2">
+                      {currentObj.name}
+                    </h2>
+                    <p>{priceFormat}</p>
+                    <img
+                      src={currentObj.img}
+                      alt={currentObj.name}
+                      className="rounded"
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </React.Fragment>
         );
       }
 
       function Main() {
         const [size, setSize] = React.useState(0);
+        const [color, setColor] = React.useState("#ffffff");
 
         function handleChange(value) {
           setSize(value);
@@ -135,16 +152,56 @@
                 package.json
               </code>
             </p>
-            <Counter handleChange={handleChange} />
+            <Counter handleChange={handleChange} bgColor={color} />
+
+            <input
+              type="color"
+              className="border"
+              onChange={(e) => setColor(e.target.value)}
+              value={color}
+            />
+
             <Grid limit={size} />
           </main>
         );
       }
 
+      function Page() {
+        const [title, setTitle] = React.useState();
+        const reference = React.useRef(null);
+
+        React.useEffect(() => {
+          if (reference.current) {
+            reference.current.focus();
+          }
+        }, []);
+
+        return (
+          <div>
+            <Header bgColor="green">{title}</Header>
+            <section className="px-8 py-6">
+              <label htmlFor="title">Enter a title:</label>
+              <input
+                type="text"
+                name="title"
+                id="title"
+                placeholder="Enter a title"
+                className="border-zinc-600 rounded-lg p-2"
+                value={title}
+                onChange={(e) => {
+                  setTitle(e.target.value);
+                }}
+                ref={reference}
+              />
+            </section>
+            <Main />
+          </div>
+        );
+      }
+
       root.render(
         <React.StrictMode>
-          <Header bgColor="green">React From Base</Header>
-          <Main />
+          <Page />
         </React.StrictMode>
       );
     </script>
