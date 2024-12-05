@@ -9,3 +9,5 @@
 3. camelCase all most of the things!
 
 4. useState is a hook, so it should be called inside a function component.
+
+5. useEffect
